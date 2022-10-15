@@ -1,0 +1,48 @@
+* {
+   margin:0;
+   font-size: 1.2rem;
+}
+body{
+   background:black;
+   display: grid;
+   grid-template-columns: auto auto auto;
+   gap: 20px 20px;  
+}
+h1 {
+   grid-column: 1 / span 3;
+   font-family:Verdana, Geneva, Tahoma, sans-serif;
+   color:aliceblue;
+   text-align: center;
+   font-size: xx-large;
+}
+@media only screen and (max-width: 1024px) {
+   body {
+      grid-template-columns: auto auto;      
+   }
+   h1 {
+      grid-column: 1 / span 2; 
+   }  
+}
+@media only screen and (max-width: 600px) {
+   body {
+      grid-template-columns: auto;      
+   }
+   h1 {
+      grid-column: 1 / span 1; 
+      font-size: x-large;
+   }  
+}
+button {
+   padding:20px;
+   border-radius:20px;
+   font-weight: bolder;
+   border:20px groove cyan;
+   background:lightcyan;
+   color:black;
+}
+.selected {
+   background: black;
+   color:lightcyan;
+   transition: 1s all;
+}
+ 
