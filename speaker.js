@@ -7,16 +7,21 @@
  */
 
 const SAMPLERATE = 22050;
-const BUFFERSIZE = 1.5*SAMPLERATE;
+const BUFFERSIZE = 2205*4;
+const BUFFERINTERVAL = BUFFERSIZE * 1000.0 / SAMPLERATE;
 const TIMEUNIT_WAVE = 1.0 / SAMPLERATE;
 
 var audioContext = null; // 
-var buffer;
-var chData;
+var buffer = null;
+var chData = null;
 var wnSource;
 var primaryGainControl;
 
 var snd; //:SoundChip
+var speakerTimer = null; 
+
+var toggleTick = true;
+var self = null;
 
 class Speaker 
 {
@@ -31,7 +36,7 @@ class Speaker
 
       buffer = audioContext.createBuffer(
          1,
-         BUFFERSIZE,
+         BUFFERSIZE*2,
          SAMPLERATE
          );
 
@@ -42,19 +47,35 @@ class Speaker
       primaryGainControl.connect(audioContext.destination);
 
       this.tick();
+
+      wnSource = audioContext.createBufferSource();
+      wnSource.buffer = buffer;
+      wnSource.loop = true;
+      wnSource.connect(primaryGainControl);
+      
+      window.setTimeout(() => {
+         speakerTimer = setInterval(this.tick,BUFFERINTERVAL)
+      },BUFFERINTERVAL/2);
+      wnSource.start();
    }
 
    tick() {
+      toggleTick=!toggleTick;
+      if (toggleTick) self.tack(); else self.tock();
+   }
+
+   tack() {
       for (let c = 0; c < BUFFERSIZE; c++ ) {
          chData[c] = snd.output();
          sndchip.update(TIMEUNIT_WAVE);
       }
-      wnSource = audioContext.createBufferSource();
-      wnSource.buffer = buffer;
-      wnSource.connect(primaryGainControl);
-      wnSource.start();
-      wnSource.onended = () => {
-         this.tick();
-      }     
-   };
+   }
+
+   tock() {
+      for (let c = 0; c < BUFFERSIZE; c++ ) {
+         chData[BUFFERSIZE+c] = snd.output();
+         sndchip.update(TIMEUNIT_WAVE);
+      }
+   }   
+
 }
